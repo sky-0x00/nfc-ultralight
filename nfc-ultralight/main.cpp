@@ -2,10 +2,16 @@
 //
 
 #include <iostream>
+#include "version.h"
+#include "..\..\..\units\system-types.h"
+#include "..\..\..\units\compile-time\build.h"
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int wmain(
+	_in argc_t argc, _in argv_t argv
+) {
+	std::wcout << L"Module: " BUILD__NAME_FULL << std::endl <<
+		L"Version: " << BUILD__VERSION << std::endl <<
+		L"Build: " << build::date() << L" " << build::time() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

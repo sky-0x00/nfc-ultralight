@@ -13,10 +13,44 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="units">
+      <UniqueIdentifier>{857ce61d-5d69-4cca-91ea-e42cd8567a32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="nfc-ultralight.cpp">
+    <ClInclude Include="..\..\..\units\macro-defs.h">
+      <Filter>units</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\units\system-types.h">
+      <Filter>units</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\units\compile-time\build.h">
+      <Filter>units</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\units\string.h">
+      <Filter>units</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\units\system-routines.h">
+      <Filter>units</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\units\compile-time\build.cpp">
+      <Filter>units</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\units\string.cpp">
+      <Filter>units</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nfc-ultralight.build-id">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

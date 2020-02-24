@@ -72,15 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)build-results\x32-debug\</OutDir>
+    <IntDir>$(SolutionDir)build-results\x32-debug\temp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)build-results\x64-debug\</OutDir>
+    <IntDir>$(SolutionDir)build-results\x64-debug\temp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)build-results\x32-release\</OutDir>
+    <IntDir>$(SolutionDir)build-results\x32-release\temp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)build-results\x64-release\</OutDir>
+    <IntDir>$(SolutionDir)build-results\x64-release\temp\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,7 +159,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="nfc-ultralight.cpp" />
+    <ClCompile Include="..\..\..\units\compile-time\build.cpp" />
+    <ClCompile Include="..\..\..\units\string.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\units\compile-time\build.h" />
+    <ClInclude Include="..\..\..\units\macro-defs.h" />
+    <ClInclude Include="..\..\..\units\string.h" />
+    <ClInclude Include="..\..\..\units\system-routines.h" />
+    <ClInclude Include="..\..\..\units\system-types.h" />
+    <ClInclude Include="version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nfc-ultralight.build-id" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
