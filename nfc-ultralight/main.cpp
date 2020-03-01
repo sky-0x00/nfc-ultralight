@@ -5,6 +5,13 @@
 #include "version.h"
 #include "..\..\..\units\system-types.h"
 #include "..\..\..\units\compile-time\build.h"
+#include "..\..\..\units\nfc\scard.h"
+
+namespace nfc {
+	static string_t device_name(_in unsigned id = 0) {
+		return L"ACS ACR122 " + std::to_wstring(id);
+	}
+}
 
 int wmain(
 	_in argc_t argc, _in argv_t argv
@@ -12,6 +19,13 @@ int wmain(
 	std::wcout << L"Module: " BUILD__NAME_FULL << std::endl <<
 		L"Version: " << BUILD__VERSION << std::endl <<
 		L"Build: " << build::date() << L" " << build::time() << std::endl;
+
+	nfc::scard::context context;
+	nfc::scard::device device(context);
+	const auto &device_names = device.enum_all();
+	const auto &scard = device.connect(nfc::device_name().c_str(), nfc::scard::device::share_mode::direct);
+	const auto is_ok = device.disconnect(scard.handle);
+	return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

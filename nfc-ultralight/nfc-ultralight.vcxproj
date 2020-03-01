@@ -160,18 +160,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\units\compile-time\build.cpp" />
+    <ClCompile Include="..\..\..\units\nfc\scard.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\units\string.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\units\compile-time\build.h" />
     <ClInclude Include="..\..\..\units\macro-defs.h" />
+    <ClInclude Include="..\..\..\units\nfc\scard.h" />
     <ClInclude Include="..\..\..\units\string.h" />
     <ClInclude Include="..\..\..\units\system-routines.h" />
     <ClInclude Include="..\..\..\units\system-types.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\units\nfc-ultralight.readme" />
     <None Include="nfc-ultralight.build-id" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -16,6 +16,9 @@
     <Filter Include="units">
       <UniqueIdentifier>{857ce61d-5d69-4cca-91ea-e42cd8567a32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="units\nfc">
+      <UniqueIdentifier>{fce39199-9c45-415f-8867-9169009f778b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\units\macro-defs.h">
@@ -36,6 +39,9 @@
     <ClInclude Include="..\..\..\units\system-routines.h">
       <Filter>units</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\units\nfc\scard.h">
+      <Filter>units\nfc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,9 +53,15 @@
     <ClCompile Include="..\..\..\units\string.cpp">
       <Filter>units</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\units\nfc\scard.cpp">
+      <Filter>units\nfc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="nfc-ultralight.build-id">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\units\nfc-ultralight.readme">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
