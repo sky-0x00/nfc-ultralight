@@ -23,8 +23,25 @@ int wmain(
 	nfc::scard::context context;
 	nfc::scard::device device(context);
 	const auto &device_names = device.enum_all();
-	const auto &scard = device.connect(nfc::device_name().c_str(), nfc::scard::device::share_mode::direct);
-	const auto is_ok = device.disconnect(scard.handle);
+	const auto &scard = device.connect(nfc::device_name().c_str(), nfc::scard::device::share_mode::exclusive);
+	
+	const nfc::scard::command a1{ 0, 0 }, a2{ 0x12, 0x34 }, b1{ 0, 0, 0 }, b2{ 0x0a, 0x12, 0x34, 0x56 };
+	const auto 
+		crc_a1 = a1.get_crc(nfc::scard::command::crc::type::a),
+		crc_a2 = a2.get_crc(nfc::scard::command::crc::type::a),
+		crc_b1 = b1.get_crc(nfc::scard::command::crc::type::b),
+		crc_b2 = b2.get_crc(nfc::scard::command::crc::type::b);
+	
+	struct data {
+		nfc::scard::command in, out;
+		data(_in unsigned size_in, _in unsigned size_out) :
+			in(size_in), out(size_out)
+		{}
+	} data(0, 2);
+	//data.in << 0x12, 0x32;
+	auto is_ok = device.transmit(scard, data.in.data(), data.out.data());
+
+	is_ok = device.disconnect(scard.handle);
 	return 0;
 }
 

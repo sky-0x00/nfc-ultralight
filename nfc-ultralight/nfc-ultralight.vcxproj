@@ -183,8 +183,8 @@
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\units\nfc-ultralight.readme" />
     <None Include="nfc-ultralight.build-id" />
+    <None Include="nfc-ultralight.readme" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

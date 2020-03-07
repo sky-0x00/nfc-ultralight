@@ -61,7 +61,7 @@
     <None Include="nfc-ultralight.build-id">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\..\units\nfc-ultralight.readme">
+    <None Include="nfc-ultralight.readme">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

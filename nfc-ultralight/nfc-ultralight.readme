@@ -1,4 +1,18 @@
 Device: ACS ACR122U-A9
 Mifare Ultralight Specification: 
-ISO 18092: NFC - https://en.wikipedia.org/wiki/Near-field_communication
-ISO 14443: https://en.wikipedia.org/wiki/ISO/IEC_14443
+	ISO 18092: NFC - https://en.wikipedia.org/wiki/Near-field_communication
+	ISO 14443: https://en.wikipedia.org/wiki/ISO/IEC_14443
+	MF0ULX1: docs/mf0ulx1.pdf
+
+ISO/IEC 14443-1:2018 Part 1: Physical characteristics
+ISO/IEC 14443-2:2016 Part 2: Radio frequency power and signal interface
+ISO/IEC 14443-3:2018 Part 3: Initialization and anticollision
+ISO/IEC 14443-4:2018 Part 4: Transmission protocol
+
+EEPROM Memory Organisation:
+	MF0UL11 - 20 pages by 4 bytes
+	MF0UL21 - 41 page by 4 bytes
+
+ISO/IEC 14443 uses following terms for components:
+	PCD: proximity coupling device (the card reader)
+	PICC: proximity integrated circuit card
