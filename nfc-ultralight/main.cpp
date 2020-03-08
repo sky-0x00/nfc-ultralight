@@ -5,7 +5,7 @@
 #include "version.h"
 #include "..\..\..\units\system-types.h"
 #include "..\..\..\units\compile-time\build.h"
-#include "..\..\..\units\nfc\scard.h"
+#include "..\..\..\units\nfc\mf0ulx1.h"
 
 namespace nfc {
 	static string_t device_name(_in unsigned id = 0) {
@@ -20,32 +20,19 @@ int wmain(
 		L"Version: " << BUILD__VERSION << std::endl <<
 		L"Build: " << build::date() << L" " << build::time() << std::endl;
 
-	nfc::scard::context context;
-	nfc::scard::device device(context);
+	nfc::device::context context;
+	nfc::device device(context);
 	const auto &device_names = device.enum_all();
-	const auto &scard = device.connect(nfc::device_name().c_str(), nfc::scard::device::share_mode::exclusive);
+	const nfc::scard_mfu &scard = device.connect(nfc::device_name().c_str(), nfc::device::share_mode::exclusive);
 	
-	const nfc::scard::command a1{ 0, 0 }, a2{ 0x12, 0x34 }, b1{ 0, 0, 0 }, b2{ 0x0a, 0x12, 0x34, 0x56 };
-	const auto 
-		crc_a1 = a1.get_crc(nfc::scard::command::crc::a),
-		crc_a2 = a2.get_crc(nfc::scard::command::crc::a),
-		crc_b1 = b1.get_crc(nfc::scard::command::crc::b),
-		crc_b2 = b2.get_crc(nfc::scard::command::crc::b);
-	
-	struct data {
-		nfc::scard::command in, out;
-		data(_in unsigned size_in, _in unsigned size_out) :
-			in(size_in), out(size_out)
-		{}
-	} data(0, 16+2+1);
-	//data.in << 0x12, 0x32;
-	data.in.set({0x30, 0x00});
-	data.in.append_crc(nfc::scard::command::crc::a);
-	for (auto &byte : data.out.data())
-		byte = 0x2a;
-	auto is_ok = device.transmit(scard, data.in.data(), data.out.data());
+	nfc::data data_r, data_fr, data_v;
+	bool is_ok = false;
 
-	is_ok = device.disconnect(scard.handle);
+	is_ok = scard.command__get_version(data_v);
+	//is_ok = scard.read(0, data_r);
+	//is_ok = scard.fast_read({0,8}, data_fr);
+
+	is_ok = device.disconnect(scard.get_handle());
 	return 0;
 }
 
