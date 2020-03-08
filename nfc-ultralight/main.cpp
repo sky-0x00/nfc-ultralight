@@ -1,39 +1,25 @@
 // nfc-ultralight.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
-#include "version.h"
+#include <windows.h>
+#include "application.h"
 #include "..\..\..\units\system-types.h"
-#include "..\..\..\units\compile-time\build.h"
-#include "..\..\..\units\nfc\mf0ulx1.h"
 
-namespace nfc {
-	static string_t device_name(_in unsigned id = 0) {
-		return L"ACS ACR122 " + std::to_wstring(id);
-	}
-}
-
-int wmain(
-	_in argc_t argc, _in argv_t argv
+result_t wmain(
+	_in argc_t argc, _in argv_t argv_s[]
 ) {
-	std::wcout << L"Module: " BUILD__NAME_FULL << std::endl <<
-		L"Version: " << BUILD__VERSION << std::endl <<
-		L"Build: " << build::date() << L" " << build::time() << std::endl;
+	try {
+		application application;
+		application.build_info(L"nfc-ultralight", {0, 0, 0, 0});
 
-	nfc::device::context context;
-	nfc::device device(context);
-	const auto &device_names = device.enum_all();
-	const nfc::scard_mfu &scard = device.connect(nfc::device_name().c_str(), nfc::device::share_mode::exclusive);
-	
-	nfc::data data_r, data_fr, data_v;
-	bool is_ok = false;
+		if (!application.parse_args(--argc, ++argv_s))
+			return Winapi::GetLastError();
 
-	is_ok = scard.command__get_version(data_v);
-	//is_ok = scard.read(0, data_r);
-	//is_ok = scard.fast_read({0,8}, data_fr);
-
-	is_ok = device.disconnect(scard.get_handle());
-	return 0;
+		return application.run();
+	}
+	catch (...) {
+		return -1;
+	}
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

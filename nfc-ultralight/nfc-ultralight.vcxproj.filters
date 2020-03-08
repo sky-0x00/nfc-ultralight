@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\..\units\nfc\mf0ulx1.h">
       <Filter>units\nfc</Filter>
     </ClInclude>
+    <ClInclude Include="application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\units\nfc\mf0ulx1.cpp">
       <Filter>units\nfc</Filter>
+    </ClCompile>
+    <ClCompile Include="application.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
