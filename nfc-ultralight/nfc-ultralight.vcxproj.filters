@@ -39,7 +39,10 @@
     <ClInclude Include="..\..\..\units\system-routines.h">
       <Filter>units</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\units\nfc\scard.h">
+    <ClInclude Include="..\..\..\units\nfc\common.h">
+      <Filter>units\nfc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\units\nfc\mf0ulx1.h">
       <Filter>units\nfc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,7 +56,10 @@
     <ClCompile Include="..\..\..\units\string.cpp">
       <Filter>units</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\units\nfc\scard.cpp">
+    <ClCompile Include="..\..\..\units\nfc\common.cpp">
+      <Filter>units\nfc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\units\nfc\mf0ulx1.cpp">
       <Filter>units\nfc</Filter>
     </ClCompile>
   </ItemGroup>

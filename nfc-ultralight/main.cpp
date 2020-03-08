@@ -27,18 +27,22 @@ int wmain(
 	
 	const nfc::scard::command a1{ 0, 0 }, a2{ 0x12, 0x34 }, b1{ 0, 0, 0 }, b2{ 0x0a, 0x12, 0x34, 0x56 };
 	const auto 
-		crc_a1 = a1.get_crc(nfc::scard::command::crc::type::a),
-		crc_a2 = a2.get_crc(nfc::scard::command::crc::type::a),
-		crc_b1 = b1.get_crc(nfc::scard::command::crc::type::b),
-		crc_b2 = b2.get_crc(nfc::scard::command::crc::type::b);
+		crc_a1 = a1.get_crc(nfc::scard::command::crc::a),
+		crc_a2 = a2.get_crc(nfc::scard::command::crc::a),
+		crc_b1 = b1.get_crc(nfc::scard::command::crc::b),
+		crc_b2 = b2.get_crc(nfc::scard::command::crc::b);
 	
 	struct data {
 		nfc::scard::command in, out;
 		data(_in unsigned size_in, _in unsigned size_out) :
 			in(size_in), out(size_out)
 		{}
-	} data(0, 2);
+	} data(0, 16+2+1);
 	//data.in << 0x12, 0x32;
+	data.in.set({0x30, 0x00});
+	data.in.append_crc(nfc::scard::command::crc::a);
+	for (auto &byte : data.out.data())
+		byte = 0x2a;
 	auto is_ok = device.transmit(scard, data.in.data(), data.out.data());
 
 	is_ok = device.disconnect(scard.handle);
