@@ -76,13 +76,14 @@ application::application(
 //	return m__workmode;
 //}
 
-void application::build_info(
+void application::get_info(
 	_in cstr_t name, _in const version &version
 ) {
 	std::wcout <<
 		L"app-name:   " << name << std::endl <<
 		L"version:    " << version.to_string() << std::endl <<
-		L"build-time: " << build::date() << L' ' << build::time() << std::endl;
+		L"build-time: " << build::to_string() << std::endl <<
+		L"start-time: " << ::run().to_string() << std::endl;
 }
 
 bool application::parse_args(

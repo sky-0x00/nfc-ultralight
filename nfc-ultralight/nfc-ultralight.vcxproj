@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\..\units\nfc\metro-msk.cpp" />
     <ClCompile Include="..\..\..\units\nfc\mf0ulx1.cpp" />
     <ClCompile Include="..\..\..\units\string.cpp" />
+    <ClCompile Include="..\..\..\units\datetime.cpp" />
     <ClCompile Include="application.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
@@ -195,6 +196,7 @@
     <ClInclude Include="..\..\..\units\string.h" />
     <ClInclude Include="..\..\..\units\system-routines.h" />
     <ClInclude Include="..\..\..\units\system-types.h" />
+    <ClInclude Include="..\..\..\units\datetime.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="version.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

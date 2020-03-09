@@ -19,7 +19,7 @@ public:
 	application();
 public:
 	bool parse_args(_in argc_t argc, _in argv_t argv_s[]) noexcept;
-	void build_info(_in cstr_t name, _in const version &version);
+	void get_info(_in cstr_t name, _in const version &version);
 	bool run();
 protected:
 	struct args__dump_create {

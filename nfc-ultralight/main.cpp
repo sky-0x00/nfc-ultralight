@@ -10,7 +10,7 @@ result_t wmain(
 ) {
 	try {
 		application application;
-		application.build_info(L"nfc-ultralight", {0, 0, 0, 0});
+		application.get_info(L"nfc-ultralight", {0, 0, 0, 0});
 
 		if (!application.parse_args(--argc, ++argv_s))
 			return Winapi::GetLastError();
