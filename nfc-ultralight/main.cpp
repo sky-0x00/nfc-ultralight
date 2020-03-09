@@ -14,8 +14,10 @@ result_t wmain(
 
 		if (!application.parse_args(--argc, ++argv_s))
 			return Winapi::GetLastError();
+		if (!application.run())
+			return Winapi::GetLastError();
 
-		return application.run();
+		return SCARD_S_SUCCESS;
 	}
 	catch (...) {
 		return -1;

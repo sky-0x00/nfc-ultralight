@@ -170,6 +170,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\..\units\nfc\metro-msk.cpp" />
     <ClCompile Include="..\..\..\units\nfc\mf0ulx1.cpp" />
     <ClCompile Include="..\..\..\units\string.cpp" />
     <ClCompile Include="application.cpp">
@@ -189,6 +190,7 @@
     <ClInclude Include="..\..\..\units\compile-time\build.h" />
     <ClInclude Include="..\..\..\units\macro-defs.h" />
     <ClInclude Include="..\..\..\units\nfc\common.h" />
+    <ClInclude Include="..\..\..\units\nfc\metro-msk.h" />
     <ClInclude Include="..\..\..\units\nfc\mf0ulx1.h" />
     <ClInclude Include="..\..\..\units\string.h" />
     <ClInclude Include="..\..\..\units\system-routines.h" />

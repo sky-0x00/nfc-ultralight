@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <map>
+#include <iomanip>
 
 #include "application.h"
 #include "..\..\..\units\compile-time\build.h"
@@ -34,7 +35,8 @@ bool workmode::name::check(
 
 
 static const workmode workmode_s[] {
-	{application::workmode::dump_create, {L'd', L"dump-create"}}
+	{application::workmode::dump_create,	{L'c', L"dump-create"}},
+	{application::workmode::dump_analyze,	{L'a', L"dump-analyze"}}
 };
 static bool check_workmode(
 	_in const string_t &argv, _out application::workmode &wm
@@ -103,6 +105,16 @@ bool application::parse_args(
 			//const auto argv = argv_s[1];
 			m__args = std::make_any<args__dump_create>(args__dump_create{argv_s[1]});
 			return true;
+
+		case workmode::dump_analyze:
+			if (2 != argc) {
+				Winapi::SetLastError(ERROR_BAD_ARGUMENTS);
+				return false;
+			}
+			//const auto argv = argv_s[1];
+			m__args = std::make_any<args__dump_analyze>(args__dump_analyze{argv_s[1]});
+			return true;
+
 	}
 
 	Winapi::SetLastError(ERROR_INTERNAL_ERROR);
@@ -119,6 +131,15 @@ bool application::run(
 				const auto &args = std::any_cast<const args__dump_create&>(m__args);
 				std::wcout << L"    file-name: \"" << args.filename << L'\"' << std::endl << std::endl;
 				return run__dump_create(args);
+			}
+			break;
+
+		case workmode::dump_analyze:
+			std::wcout << L"work-mode:  dump-analyze" << std::endl;
+			{
+				const auto &args = std::any_cast<const args__dump_analyze&>(m__args);
+				std::wcout << L"    file-name: \"" << args.filename << L'\"' << std::endl << std::endl;
+				return run__dump_analyze(args);
 			}
 			break;
 	}
@@ -156,8 +177,8 @@ namespace nfc {
 		return false;
 	}
 	
-	std::wcout << " ok" << std::endl << L"open-file for writing...";
-	std::ofstream fout(args.filename, std::ios_base::out | std::ios_base::binary);
+	std::wcout << " ok" << std::endl << L"open file for writing...";
+	std::ofstream fout(args.filename, std::ios_base::out|std::ios_base::binary);
 	const auto is_fout = fout.is_open();
 	if (!is_fout) {
 		std::wcout << L" error, #" << Winapi::GetLastError() << std::endl;
@@ -197,6 +218,55 @@ exit:
 	std::wcout << std::endl;
 
 	return is_fout;
+}
+
+/*static*/ bool application::run__dump_analyze(
+	_in const args__dump_analyze &args
+) {
+	std::wcout << L"open file for reading...";
+	std::ifstream fin(args.filename, std::ios_base::in|std::ios_base::binary);
+	if (!fin.is_open()) {
+		std::wcout << L" error, #" << Winapi::GetLastError() << std::endl;
+		return false;
+	} 
+
+	auto get_filesize = [](
+		_in std::ifstream &fin
+	) -> unsigned {
+		fin.seekg(0, std::ios_base::end);
+		const auto size = static_cast<unsigned>(fin.tellg());
+		fin.seekg(0, std::ios_base::beg);
+		return size;
+	};
+	const auto filesize = get_filesize(fin);
+	std::wcout << L" ok, " << filesize << L" byte(s)" << std::endl;
+
+	std::wcout << L"checking data format... ";
+	{
+		const nfc::block_info block_info(5);			
+		if ((block_info.count * block_info.pages_per_block) != (filesize >> 2)) {
+			std::wcout << L" error, file-size mismatch" << std::endl;
+		}
+		std::wcout << L" ok, " << block_info.count << L" block(s) = " << block_info.count * block_info.pages_per_block << L" page(s)" << std::endl;
+	}	
+
+	//std::wcout << L"reading... ";
+	nfc::data buffer(filesize);
+	fin.read(reinterpret_cast<char*>(buffer.data()), filesize);
+	if (filesize != fin.gcount()) {
+		//std::wcout << L" error, partial data readed: only " << fin.gcount() << L'/' << filesize << L" byte(s)" << std::endl;
+		return false;
+	}
+	fin.close();
+
+	std::wcout << L"analyzing..." << std::endl;
+	const auto pc_buffer_dec = reinterpret_cast<nfc::scard_mfu::pc_data_dec>(buffer.data());
+	std::wcout << L"    uid: " << std::hex << std::noshowbase << std::uppercase << std::setfill(L'0');
+	for (const auto &byte: pc_buffer_dec->uid())
+		std::wcout << std::setw(2) << byte;
+	
+	std::wcout << std::endl;
+	return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

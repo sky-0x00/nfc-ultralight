@@ -16,3 +16,8 @@ EEPROM Memory Organisation:
 ISO/IEC 14443 uses following terms for components:
 	PCD: proximity coupling device (the card reader)
 	PICC: proximity integrated circuit card
+
+
+cmd-line args:
+	-c|--dump-create "..\..\data\fname-msk.dmp"						// create eeprom-dump of mifare-ultralight scard (and saving it to file)
+	-a|--dump-analyze "..\..\data\fname-msk.dmp"					// analyze eeprom-dump of mifare-ultralight scard (loading it from file)
