@@ -19,5 +19,9 @@ ISO/IEC 14443 uses following terms for components:
 
 
 cmd-line args:
+	<no-args>														// only in debug-mode
 	-c|--dump-create "..\..\data\fname-msk.dmp"						// create eeprom-dump of mifare-ultralight scard (and saving it to file)
 	-a|--dump-analyze "..\..\data\fname-msk.dmp"					// analyze eeprom-dump of mifare-ultralight scard (loading it from file)
+	-r|--dump-restore "..\..\data\fname-msk.dmp"					// restore dump
+
+Reader Firmware: ACR122U214

@@ -90,6 +90,13 @@ bool application::parse_args(
 	_in argc_t argc, _in argv_t argv_s[]
 ) noexcept {
 
+#ifdef _DEBUG
+	if (0 == argc) {
+		m__workmode = workmode::debug;
+		return true;
+	}	
+#endif
+
 	if (argc < 1) {
 		Winapi::SetLastError(ERROR_BAD_ARGUMENTS);
 		return false;
@@ -98,6 +105,7 @@ bool application::parse_args(
 		return false;
 
 	switch (m__workmode) {
+
 		case workmode::dump_create:
 			if (2 != argc) {
 				Winapi::SetLastError(ERROR_BAD_ARGUMENTS);
@@ -126,6 +134,13 @@ bool application::run(
 ) {
 	//assert(0 != static_cast<unsigned>(m__workmode));
 	switch (m__workmode) {
+
+#ifdef _DEBUG
+		case workmode::debug:
+			std::wcout << L"work-mode:  debug" << std::endl;
+			return run__debug();
+#endif
+
 		case workmode::dump_create: 
 			std::wcout << L"work-mode:  dump-create" << std::endl; 
 			{			
@@ -151,7 +166,7 @@ bool application::run(
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 namespace nfc {
 	static string_t device_name(_in unsigned id = 0) {
-		return L"ACS ACR122 " + std::to_wstring(id);
+		return /*L"ACS ACR122 "*/ L"ACS ACR122U PICC Interface " + std::to_wstring(id);
 	}
 	struct block_info {
 		static const unsigned pages_per_block = 4;		// всегда 4 страницы в блоке (4x4=16 байт)
@@ -267,6 +282,44 @@ exit:
 		std::wcout << std::setw(2) << byte;
 	
 	std::wcout << std::endl;
+	return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ bool application::run__debug(
+	/*_in const args__debug &args*/
+) {
+	nfc::device::context context;
+	nfc::device device(context);
+	const auto &device_names = device.enum_all();
+
+	std::wcout << std::endl << "connecting...";
+	const nfc::scard_mfu &scard = device.connect(nfc::device_name().c_str(), nfc::device::share_mode::exclusive);
+	if (!scard.get_handle()) {
+		std::wcout << L" error, #" << Winapi::GetLastError() << std::endl;
+		return false;
+	}
+	std::wcout << " ok" << std::endl;
+
+	nfc::data data;
+	if (!scard.command__get_status(data))
+		goto exit;
+	if (!scard.command__antenna_switch(true))
+		goto exit;
+	if (!scard.command__antenna_switch(false))
+		goto exit;
+	//SCardControl(scard.get_handle(), IOCTL_SMARTCARD_SET_CARD_TYPE);
+
+	// ...
+
+	exit:
+	std::wcout << "disconnecting...";
+	if (device.disconnect(scard.get_handle()))
+		std::wcout << L" ok";
+	else
+		std::wcout << L" error, #" << Winapi::GetLastError();
+	std::wcout << std::endl;
+
 	return true;
 }
 
