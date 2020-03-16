@@ -12,7 +12,8 @@ public:
 		debug = 0,
 #endif
 		dump_create = 1,
-		dump_analyze
+		dump_analyze,
+		dump_restore
 	};
 	struct version {
 		unsigned major, minor, build_major, build_minor;
@@ -35,6 +36,9 @@ protected:
 	struct args__dump_analyze {
 		cstr_t filename;
 	};
+	struct args__dump_restore {
+		cstr_t filename;
+	};
 protected:
 #ifdef _DEBUG
 	static bool run__debug(/*_in const args__debug &args*/);
@@ -42,6 +46,7 @@ protected:
 	//workmode get_workmode() const noexcept;
 	static bool run__dump_create(_in const args__dump_create &args);
 	static bool run__dump_analyze(_in const args__dump_analyze &args);
+	static bool run__dump_restore(_in const args__dump_restore &args);
 private:
 	workmode m__workmode;
 	std::any m__args;

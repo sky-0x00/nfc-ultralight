@@ -36,7 +36,8 @@ bool workmode::name::check(
 
 static const workmode workmode_s[] {
 	{application::workmode::dump_create,	{L'c', L"dump-create"}},
-	{application::workmode::dump_analyze,	{L'a', L"dump-analyze"}}
+	{application::workmode::dump_analyze,	{L'a', L"dump-analyze"}},
+	{application::workmode::dump_restore,	{L'r', L"dump-restore"}}
 };
 static bool check_workmode(
 	_in const string_t &argv, _out application::workmode &wm
@@ -124,6 +125,15 @@ bool application::parse_args(
 			m__args = std::make_any<args__dump_analyze>(args__dump_analyze{argv_s[1]});
 			return true;
 
+		case workmode::dump_restore:
+			if (2 != argc) {
+				Winapi::SetLastError(ERROR_BAD_ARGUMENTS);
+				return false;
+			}
+			//const auto argv = argv_s[1];
+			m__args = std::make_any<args__dump_restore>(args__dump_restore{ argv_s[1] });
+			return true;
+
 	}
 
 	Winapi::SetLastError(ERROR_INTERNAL_ERROR);
@@ -158,6 +168,15 @@ bool application::run(
 				return run__dump_analyze(args);
 			}
 			break;
+
+		case workmode::dump_restore:
+			std::wcout << L"work-mode:  dump-restore" << std::endl;
+			{
+				const auto &args = std::any_cast<const args__dump_restore&>(m__args);
+				std::wcout << L"    file-name: \"" << args.filename << L'\"' << std::endl << std::endl;
+				return run__dump_restore(args);
+			}
+			break;
 	}
 	assert(true);
 	return false;
@@ -168,14 +187,27 @@ namespace nfc {
 	static string_t device_name(_in unsigned id = 0) {
 		return /*L"ACS ACR122 "*/ L"ACS ACR122U PICC Interface " + std::to_wstring(id);
 	}
-	struct block_info {
+	class block_info {
+	public:
 		static const unsigned pages_per_block = 4;		// всегда 4 страницы в блоке (4x4=16 байт)
 		const unsigned count;							// общее число блоков 5 для MF0UL11 (5x4=20 страниц), 10 для MF0UL21 (10x4+1=41 страница)
+	
+	protected:
 		block_info(
 			_in unsigned count
 		) :
 			count(count)
 		{}
+	public:
+		block_info(
+			_in scard_mfu::version mfu_version
+		) :
+			block_info(static_cast<unsigned>(mfu_version) * 5)
+		{
+			static_assert(1 == static_cast<unsigned>(scard_mfu::version::v1), "1 == v1");
+			static_assert(2 == static_cast<unsigned>(scard_mfu::version::v2), "2 == v2");
+		}
+	
 	};
 }
 
@@ -186,14 +218,14 @@ namespace nfc {
 	nfc::device device(context);
 	const auto &device_names = device.enum_all();
 
-	std::wcout << "connecting...";
+	std::wcout << "device, connecting...";
 	const nfc::scard_mfu &scard = device.connect(nfc::device_name().c_str(), nfc::device::share_mode::exclusive);
 	if (!scard.get_handle()) {
 		std::wcout << L" error, #" << Winapi::GetLastError() << std::endl;
 		return false;
 	}
 	
-	std::wcout << " ok" << std::endl << L"open file for writing...";
+	std::wcout << " ok" << std::endl << L"file-out, open for writing...";
 	std::ofstream fout(args.filename, std::ios_base::out|std::ios_base::binary);
 	const auto is_fout = fout.is_open();
 	if (!is_fout) {
@@ -203,8 +235,8 @@ namespace nfc {
 		std::wcout << " ok";
 		if (ERROR_ALREADY_EXISTS == Winapi::GetLastError())
 			std::wcout << L", re-write (already-exist)";
-		std::wcout << std::endl << L"reading..." << std::endl;
-		const nfc::block_info block_info(5);
+		std::wcout << std::endl << L"device, reading..." << std::endl;
+		const nfc::block_info block_info(nfc::scard_mfu::version::v1);
 
 		for (unsigned i = 0; i < block_info.count; ++i) {
 			const auto page_begin = i * block_info.pages_per_block;
@@ -226,7 +258,7 @@ namespace nfc {
 	}
 
 exit:
-	std::wcout << "disconnecting...";
+	std::wcout << "device, disconnecting...";
 	if (device.disconnect(scard.get_handle()))
 		std::wcout << L" ok";
 	else
@@ -234,6 +266,62 @@ exit:
 	std::wcout << std::endl;
 
 	return is_fout;
+}
+
+/*static*/ bool application::run__dump_restore(
+	_in const args__dump_restore &args
+) {
+	nfc::device::context context;
+	nfc::device device(context);
+	const auto &device_names = device.enum_all();
+
+	std::wcout << "device, connecting...";
+	const nfc::scard_mfu &scard = device.connect(nfc::device_name().c_str(), nfc::device::share_mode::exclusive);
+	if (!scard.get_handle()) {
+		std::wcout << L" error, #" << Winapi::GetLastError() << std::endl;
+		return false;
+	}
+
+	std::wcout << " ok" << std::endl << L"file-in, open for reading...";
+	std::ifstream fin(args.filename, std::ios_base::in | std::ios_base::binary);
+	const auto is_fin = fin.is_open();
+	if (!is_fin) {
+		std::wcout << L" error, #" << Winapi::GetLastError() << std::endl;
+		goto exit;
+	} {
+		std::wcout << " ok" << std::endl << L"file-in, reading...";
+		nfc::data data;
+		fin.read();
+
+		std::wcout << "device, writing..." << std::endl;
+		const nfc::block_info block_info(nfc::scard_mfu::version::v1);
+
+		for (unsigned i = 0; i < block_info.count; ++i) {
+			std::wcout << "    block " << i << L"..." << std::endl;
+			for (unsigned j = 0; j < block_info.pages_per_block; ++j) {
+				const auto page = i * block_info.pages_per_block + j;
+				std::wcout << "        page " << page << L"...";
+				//fin.read(reinterpret_cast<const char*>(data.data()), size);
+				//if (scard.command__read(page_begin, data))
+				std::wcout << " ok" << std::endl;
+			}
+		}
+		fin.close();
+
+		//is_ok = scard.command__get_version(data_v);
+		//is_ok = scard.read(0, data_r);
+		//is_ok = scard.fast_read({0,8}, data_fr);
+	}
+
+exit:
+	std::wcout << "device, disconnecting...";
+	if (device.disconnect(scard.get_handle()))
+		std::wcout << L" ok";
+	else
+		std::wcout << L" error, #" << Winapi::GetLastError();
+	std::wcout << std::endl;
+
+	return is_fin;
 }
 
 /*static*/ bool application::run__dump_analyze(
@@ -259,7 +347,7 @@ exit:
 
 	std::wcout << L"checking data format... ";
 	{
-		const nfc::block_info block_info(5);			
+		const nfc::block_info block_info(nfc::scard_mfu::version::v1);			
 		if ((block_info.count * block_info.pages_per_block) != (filesize >> 2)) {
 			std::wcout << L" error, file-size mismatch" << std::endl;
 		}
